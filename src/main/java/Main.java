@@ -1,6 +1,7 @@
 import org.w3c.dom.ls.LSOutput;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,7 +20,7 @@ public class Main {
         System.out.println("This employee has the highest salary in Gothenburg: " +
                 employees
                         .stream()
-                        .filter(al -> al.getOffice().equals(Office.GÖTEBORG))
+                        .filter(gbg -> gbg.getOffice().equals(Office.GÖTEBORG))
                         .sorted(Comparator.comparing(Employees::getSalary).reversed())
                         .limit(1)
                         .toList()
@@ -29,7 +30,7 @@ public class Main {
         //3. Plocka ut den anställde som har lägst lön i Stockholm.
         List<Employees> lowestSalarySthlm = employees
                 .stream()
-                .filter(al -> al.getOffice().equals(Office.STOCKHOLM))
+                .filter(sthlm -> sthlm.getOffice().equals(Office.STOCKHOLM))
                 .sorted(Comparator.comparing(Employees::getSalary))
                 .limit(1)
                 .toList();
@@ -48,7 +49,7 @@ public class Main {
         System.out.println("The average salary in Malmö is: " +
                 employees
                         .stream()
-                        .filter(al -> al.getOffice().equals(Office.MALMÖ))
+                        .filter(mlm -> mlm.getOffice().equals(Office.MALMÖ))
                         .mapToDouble(Employees::getSalary)
                         .summaryStatistics()
                         .getAverage()
@@ -60,7 +61,7 @@ public class Main {
         System.out.println("The total salary for the consultants in Stockholm is: " +
                 employees
                         .stream()
-                        .filter(al -> al.getOffice().equals(Office.STOCKHOLM))
+                        .filter(x -> x.getOffice().equals(Office.STOCKHOLM))
                         .filter(Employees::isHiredConsultant)
                         .sorted(Comparator.comparing(Employees::getSalary))
                         .mapToDouble(Employees::getSalary)
@@ -116,7 +117,7 @@ public class Main {
                 employees
                         .stream()
                         .collect(Collectors.groupingBy(Employees::getOffice,
-                                TreeMap::new, Collectors.counting()));
+                                 Collectors.counting()));
         howManyEmployees.forEach((Office, count) -> System.out.printf("%s has %d employee(s)%n", Office, count));
 
         System.out.println();
@@ -124,7 +125,7 @@ public class Main {
         Map<Office, Long> totalSalary = employees
                 .stream()
                 .collect(Collectors.groupingBy(Employees::getOffice,
-                        TreeMap::new, Collectors.summingLong(Employees::getSalary)));
+                         Collectors.summingLong(Employees::getSalary)));
         totalSalary.forEach((Office, count) -> System.out.printf("%s has a total salary of %d SEK%n", Office, count));
 
         System.out.println();
@@ -132,7 +133,7 @@ public class Main {
         Map<Office, Double> averageSalary = employees
                 .stream()
                 .collect(Collectors.groupingBy(Employees::getOffice,
-                        TreeMap::new, Collectors.averagingDouble(Employees::getSalary)));
+                         Collectors.averagingDouble(Employees::getSalary)));
         averageSalary.forEach((Office, count) -> System.out.printf("%s has an average salary of %,.3f SEK%n", Office, count));
 
         System.out.println();
@@ -163,7 +164,7 @@ public class Main {
         Map<Office, Double> consultantPercentage = employees
                 .stream()
                 .collect(Collectors.groupingBy(Employees::getOffice,
-                        TreeMap::new, Collectors.averagingDouble(employee -> employee.isHiredConsultant()? 1 : 0)));
+                         Collectors.averagingDouble(employee -> employee.isHiredConsultant()? 1 : 0)));
         consultantPercentage.forEach((Office, count) -> System.out.printf("%s has a %,.1f%% of consultants%n", Office, count * 100));
 
         System.out.println();
@@ -172,7 +173,7 @@ public class Main {
         Map<Office, Long> howManyWorkers = employees
                 .stream()
                 .collect(Collectors.groupingBy(Employees::getOffice,
-                        TreeMap::new, Collectors.counting()));
+                         Collectors.counting()));
         howManyWorkers.forEach((Office, count) -> System.out.printf("%s has a %d %% of employees%n", Office, count * 10));
 
     }
